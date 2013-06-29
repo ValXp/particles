@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Particles</string>
+    <string name="title_activity_main">Particles</string>
+    <string name="Title_Particle_Number">Particle Number :</string>
+    <string name="Hint_Particle_Number">Enter Particle Number</string>
+    <string name="Title_Particle_Size">Particle size :</string>
+    <string name="Motion_Blur">Motion Blur (Disable to increase performances)</string>
+    <string name="Go_Button">Go !</string>
+    <string name="Not_Enough_Particles">Not Enough Particles (Try 10000)</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="settings_particle_number">pnumer</string>
+    <string name="settings_particle_size">psize</string>
+    <string name="settings_particle_blur">blur</string>
+    <string name="settings_name">particles_settings</string>
+    <string name="title_activity_java_engine_test">JavaEngineTestActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
+</resources>
