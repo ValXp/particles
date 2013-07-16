@@ -1,3 +1,4 @@
+
 package com.valxp.particles;
 
 import javax.microedition.khronos.egl.EGL10;
@@ -10,69 +11,67 @@ import android.content.Context;
 import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 public class GLView extends GLSurfaceView {
-	private static int pnumber = 42;
-	private static float psize = 1.0f;
-	private static boolean motionBlur = true;
+    private static int pnumber = 42;
+    private static float psize = 1.0f;
+    private static boolean motionBlur = true;
     private static String TAG = "GL2JNIView";
     private static final boolean DEBUG = false;
+    private ScaleGestureDetector mScaleDetector;
+    private float mScaleFactor = 1;
+    private Boolean mScaleChanged = false;
+    private Context mContext;
 
-	public GLView(Context context, int pnumber, float psize, boolean motionBlur) {
-		super(context);
-		GLView.psize = psize;
-		GLView.pnumber = pnumber;
-		GLView.motionBlur = motionBlur;
-		init(false, 0, 0);
-		
-		setOnClickListener(l);
-		//setSystemUiVisibility(SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-		// TODO Auto-generated constructor stub
-	}
-	
-	private OnClickListener l = new OnClickListener() {
-		//boolean isPaused = false;
+    public GLView(Context context, int pnumber, float psize, boolean motionBlur) {
+        super(context);
+        mContext = context;
+        GLView.psize = psize;
+        GLView.pnumber = pnumber;
+        GLView.motionBlur = motionBlur;
+        init(false, 0, 0);
+        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
+        setOnClickListener(l);
+        // setSystemUiVisibility(SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
 
-		public void onClick(View arg0) {
-			ParticlesCPP.randomize();
-			/*
-			if (!isPaused)
-			{
-				ParticlesCPP.pause();
-			} else
-			{
-				ParticlesCPP.unpause();
-			}
-			
-			isPaused = !isPaused;*/
-		}
-	};
+    private OnClickListener l = new OnClickListener() {
+        public void onClick(View arg0) {
+            if (!mScaleChanged)
+                ParticlesCPP.randomize();
+            mScaleChanged = false;
+        }
+    };
 
-	private void init(boolean translucent, int depth, int stencil) {
+    private void init(boolean translucent, int depth, int stencil) {
 
-        /* By default, GLSurfaceView() creates a RGB_565 opaque surface.
-         * If we want a translucent one, we should change the surface's
-         * format here, using PixelFormat.TRANSLUCENT for GL Surfaces
-         * is interpreted as any 32-bit surface with alpha by SurfaceFlinger.
+        /*
+         * By default, GLSurfaceView() creates a RGB_565 opaque surface. If we
+         * want a translucent one, we should change the surface's format here,
+         * using PixelFormat.TRANSLUCENT for GL Surfaces is interpreted as any
+         * 32-bit surface with alpha by SurfaceFlinger.
          */
         if (translucent) {
             this.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         }
 
-        /* Setup the context factory for 2.0 rendering.
-         * See ContextFactory class definition below
+        /*
+         * Setup the context factory for 2.0 rendering. See ContextFactory class
+         * definition below
          */
         setEGLContextFactory(new ContextFactory());
 
-        /* We need to choose an EGLConfig that matches the format of
-         * our surface exactly. This is going to be done in our
-         * custom config chooser. See ConfigChooser class definition
-         * below.
+        /*
+         * We need to choose an EGLConfig that matches the format of our surface
+         * exactly. This is going to be done in our custom config chooser. See
+         * ConfigChooser class definition below.
          */
-        setEGLConfigChooser( translucent ?
-                             new ConfigChooser(8, 8, 8, 8, depth, stencil) :
-                             new ConfigChooser(5, 6, 5, 0, depth, stencil) );
+        setEGLConfigChooser(translucent ?
+                new ConfigChooser(8, 8, 8, 8, depth, stencil) :
+                new ConfigChooser(5, 6, 5, 0, depth, stencil));
 
         /* Set the renderer responsible for frame rendering */
         setRenderer(new Renderer());
@@ -80,10 +79,13 @@ public class GLView extends GLSurfaceView {
 
     private static class ContextFactory implements GLSurfaceView.EGLContextFactory {
         private static int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
+
         public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig) {
             Log.w(TAG, "creating OpenGL ES 2.0 context");
             checkEglError("Before eglCreateContext", egl);
-            int[] attrib_list = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL10.EGL_NONE };
+            int[] attrib_list = {
+                    EGL_CONTEXT_CLIENT_VERSION, 2, EGL10.EGL_NONE
+            };
             EGLContext context = egl.eglCreateContext(display, eglConfig, EGL10.EGL_NO_CONTEXT, attrib_list);
             checkEglError("After eglCreateContext", egl);
             return context;
@@ -112,23 +114,25 @@ public class GLView extends GLSurfaceView {
             mStencilSize = stencil;
         }
 
-        /* This EGL config specification is used to specify 2.0 rendering.
-         * We use a minimum size of 4 bits for red/green/blue, but will
-         * perform actual matching in chooseConfig() below.
+        /*
+         * This EGL config specification is used to specify 2.0 rendering. We
+         * use a minimum size of 4 bits for red/green/blue, but will perform
+         * actual matching in chooseConfig() below.
          */
         private static int EGL_OPENGL_ES2_BIT = 4;
         private static int[] s_configAttribs2 =
         {
-            EGL10.EGL_RED_SIZE, 4,
-            EGL10.EGL_GREEN_SIZE, 4,
-            EGL10.EGL_BLUE_SIZE, 4,
-            EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-            EGL10.EGL_NONE
+                EGL10.EGL_RED_SIZE, 4,
+                EGL10.EGL_GREEN_SIZE, 4,
+                EGL10.EGL_BLUE_SIZE, 4,
+                EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+                EGL10.EGL_NONE
         };
 
         public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
 
-            /* Get the number of minimally matching EGL configurations
+            /*
+             * Get the number of minimally matching EGL configurations
              */
             int[] num_config = new int[1];
             egl.eglChooseConfig(display, s_configAttribs2, null, 0, num_config);
@@ -139,22 +143,24 @@ public class GLView extends GLSurfaceView {
                 throw new IllegalArgumentException("No configs match configSpec");
             }
 
-            /* Allocate then read the array of minimally matching EGL configs
+            /*
+             * Allocate then read the array of minimally matching EGL configs
              */
             EGLConfig[] configs = new EGLConfig[numConfigs];
             egl.eglChooseConfig(display, s_configAttribs2, configs, numConfigs, num_config);
 
             if (DEBUG) {
-                 printConfigs(egl, display, configs);
+                printConfigs(egl, display, configs);
             }
-            /* Now return the "best" one
+            /*
+             * Now return the "best" one
              */
             return chooseConfig(egl, display, configs);
         }
 
         public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display,
                 EGLConfig[] configs) {
-            for(EGLConfig config : configs) {
+            for (EGLConfig config : configs) {
                 int d = findConfigAttrib(egl, display, config,
                         EGL10.EGL_DEPTH_SIZE, 0);
                 int s = findConfigAttrib(egl, display, config,
@@ -168,9 +174,9 @@ public class GLView extends GLSurfaceView {
                 int r = findConfigAttrib(egl, display, config,
                         EGL10.EGL_RED_SIZE, 0);
                 int g = findConfigAttrib(egl, display, config,
-                            EGL10.EGL_GREEN_SIZE, 0);
+                        EGL10.EGL_GREEN_SIZE, 0);
                 int b = findConfigAttrib(egl, display, config,
-                            EGL10.EGL_BLUE_SIZE, 0);
+                        EGL10.EGL_BLUE_SIZE, 0);
                 int a = findConfigAttrib(egl, display, config,
                         EGL10.EGL_ALPHA_SIZE, 0);
 
@@ -190,7 +196,7 @@ public class GLView extends GLSurfaceView {
         }
 
         private void printConfigs(EGL10 egl, EGLDisplay display,
-            EGLConfig[] configs) {
+                EGLConfig[] configs) {
             int numConfigs = configs.length;
             Log.w(TAG, String.format("%d configurations", numConfigs));
             for (int i = 0; i < numConfigs; i++) {
@@ -234,7 +240,8 @@ public class GLView extends GLSurfaceView {
                     EGL10.EGL_ALPHA_MASK_SIZE,
                     EGL10.EGL_COLOR_BUFFER_TYPE,
                     EGL10.EGL_RENDERABLE_TYPE,
-                    0x3042 // EGL10.EGL_CONFORMANT
+                    0x3042
+                    // EGL10.EGL_CONFORMANT
             };
             String[] names = {
                     "EGL_BUFFER_SIZE",
@@ -275,11 +282,12 @@ public class GLView extends GLSurfaceView {
             for (int i = 0; i < attributes.length; i++) {
                 int attribute = attributes[i];
                 String name = names[i];
-                if ( egl.eglGetConfigAttrib(display, config, attribute, value)) {
+                if (egl.eglGetConfigAttrib(display, config, attribute, value)) {
                     Log.w(TAG, String.format("  %s: %d\n", name, value[0]));
                 } else {
                     // Log.w(TAG, String.format("  %s: failed\n", name));
-                    while (egl.eglGetError() != EGL10.EGL_SUCCESS);
+                    while (egl.eglGetError() != EGL10.EGL_SUCCESS)
+                        ;
                 }
             }
         }
@@ -296,22 +304,42 @@ public class GLView extends GLSurfaceView {
 
     private static class Renderer implements GLSurfaceView.Renderer {
 
-		public void onDrawFrame(GL10 gl) {
-				ParticlesCPP.step();
-        	
+        public void onDrawFrame(GL10 gl) {
+            ParticlesCPP.step();
+
         }
 
         public void onSurfaceChanged(GL10 gl, int width, int height) {
-        	
-        		System.out.println("[JAVA] On surface Changed");
-        		ParticlesCPP.init(width, height, pnumber, psize, motionBlur);
-        	
+
+            System.out.println("[JAVA] On surface Changed");
+            ParticlesCPP.init(width, height, pnumber, psize, motionBlur);
+
         }
 
         public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        	System.out.println("[JAVA] On surface Created");
+            System.out.println("[JAVA] On surface Created");
+        }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        mScaleDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }
+
+    private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        @Override
+        public boolean onScale(ScaleGestureDetector detector) {
+            mScaleChanged = true;
+            mScaleFactor *= detector.getScaleFactor();
+
+            // Don't let the object get too small or too large.
+            mScaleFactor = Math.max(0.05f, Math.min(mScaleFactor, 1.5f));
+
+            ParticlesCPP.setZoom((10 * mScaleFactor) - 10);
+            ((ParticlesActivity)mContext).onZoomUpdate(mScaleFactor);
+
+            return true;
         }
     }
 }
-
-

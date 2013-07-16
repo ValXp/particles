@@ -16,5 +16,12 @@
     <string name="settings_particle_size">psize</string>
     <string name="settings_particle_blur">blur</string>
     <string name="settings_name">particles_settings</string>
- 
+	<string name="loading">Chargement ...</string>
+	
+    <string name="settings_show_fps">show_fps</string>
+    <string name="title_activity_java_engine_test">JavaEngineTestActivity</string>
+    <string name="action_settings">Parametres</string>
+    
+	<string name="too_many_particles">Impossible de lancer le moteur physique. Essayez moins de particules</string>
+	<string name="Show_Fps">Afficher les FPS</string>
 </resources>

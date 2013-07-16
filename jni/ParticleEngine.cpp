@@ -20,8 +20,10 @@ void    ParticleEngine::initParticle(uint idx)
 
     PSPEED_Y(idx) = (SPEED_Y * Utils::myRand(RAND / 1.2, RAND)) + m_user.y;
     // sampling a point in a disk to have a round projection of particles
-    float x = Utils::myRand(-RAND, RAND) , y = Utils::myRand(-RAND, RAND);
-    //Utils::genRandomDiskPoint(RAND, x, y);
+    float x, y;
+    //x = Utils::myRand(-RAND, RAND);
+    //y = Utils::myRand(-RAND, RAND);
+    Utils::genRandomDiskPoint(RAND, x, y);
     PSPEED_X(idx) = (SPEED_X * x ) + m_user.x;
     PSPEED_Z(idx) = (SPEED_Z * y ) + m_user.z;
 
@@ -52,6 +54,7 @@ void    ParticleEngine::initParticles()
     if (m_active == 0 /*|| m_colors == 0*/ ||
         m_positions == 0 || m_speed == 0)
     {
+        LOGE("Cannot allocate %d particles. Not enough memory (%d kbytes)\n", m_max_part_nbr, size/1000);
         if (m_active)
             delete[] m_active;
         /*if (m_colors)
@@ -60,7 +63,6 @@ void    ParticleEngine::initParticles()
             delete[] m_positions;
         if (m_speed)
             delete[] m_speed;
-        LOGE("Cannot allocate %d particles. Not enough memory (%d kbytes)\n", m_max_part_nbr, size/1000);
         return ; // exceptions disabled
         //throw EngineException(MEM_ALLOC_ERROR_MSG);
     }
@@ -135,14 +137,13 @@ void    ParticleEngine::_step(ThreadArg &arg)
             POS_Z(i) += PSPEED_Z(i);
             PSPEED_Y(i) -= m_gravity;
 
-            if (POS_Y(i) > LIMIT_Y || POS_Y(i) < -LIMIT_Y ||
+            if (POS_Y(i) > LIMIT_Y || POS_Y(i) < -LIMIT_Y)/* ||
                 POS_X(i) > LIMIT_X || POS_X(i) < -LIMIT_X ||
-                POS_Z(i) > LIMIT_Z || POS_Z(i) < -LIMIT_Z)
+                POS_Z(i) > LIMIT_Z || POS_Z(i) < -LIMIT_Z)*/
                 initParticle(i);
            
             // consider the center of the cone at 0,CONE_TOP_Y,0
             // it was supposed to be a cone....
-            
             if (POS_Y(i) <= CONE_TOP_Y && POS_Y(i) >= CONE_BOT_Y && PSPEED_Y(i) <= 0)
             {
                // compute distance to the center
@@ -198,7 +199,7 @@ ParticleEngine::ParticleEngine(uint max_part_nbr, uint threadNb)
     m_threadNb = threadNb;
 #ifndef PC_VERSION
     if (threadNb == 0)
-        m_threadNb = android_getCpuCount();
+        m_threadNb = android_getCpuCount() - 1;
 #endif
   
 

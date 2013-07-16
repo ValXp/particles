@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,7 +13,7 @@ import android.widget.Toast;
 
 public class JavaCaller {
 	
-	public static Context context = null;
+	public static ParticlesActivity context = null;
 	public static String readAsset(String name)
 	{
 		if (context == null)
@@ -100,5 +99,12 @@ public class JavaCaller {
 		//Toast.makeText(MainActivity.context, text, duration).show();
 		System.out.println("printMessage : " + text + " duration " + duration);
 	}
-
+	
+	public static void onEngineLoaded(int status) {
+	    context.onEngineLoaded(status);
+	}
+	
+	public static void onFPSUpdate(float cpu, float gpu) {
+	    context.onFPSUpdate(cpu, gpu);
+	}
 }

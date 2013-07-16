@@ -32,41 +32,43 @@ namespace Utils
 
 #ifndef PC_VERSION
 
-    void printGLString(const char *name, GLenum s);
-    inline void checkGlError(const char* op, int line = -1)
-    {
-    // increase speed by removing error checking, -O3 will remove call
-    #ifdef CHECK_GL_ERRORS
-        for (GLint error = glGetError(); error; error
-                = glGetError()) {
-            if (line != -1)
-            LOGI("after file %s at line %d glError (0x%x)\n", op, line, error);
-            else
-            LOGI("after %s glError (0x%x)\n", op, error);
-        }
-    #endif
-    }
-    char    *loadRessource(JNIEnv *env, const char *ressource);
-    void    printMessage(JNIEnv *env, const char *message, int duration);
-    Bitmap  *loadImage(JNIEnv *env);
-    void    printABI();
+	void printGLString(const char *name, GLenum s);
+	inline void checkGlError(const char* op, int line = -1)
+	{
+		// increase speed by removing error checking, -O3 will remove call
+#ifdef CHECK_GL_ERRORS
+		for (GLint error = glGetError(); error; error
+				= glGetError()) {
+			if (line != -1)
+				LOGI("after file %s at line %d glError (0x%x)\n", op, line, error);
+			else
+				LOGI("after %s glError (0x%x)\n", op, error);
+		}
 #endif
-    void    genRandomDiskPoint(float disk_radius, float &x, float &y); // Z will be zero
-    float   myRand(float min, float max);
-    // add "addVal" to "*toSum" atomically
+	}
+	char    *loadRessource(JNIEnv *env, const char *ressource);
+	void    printMessage(JNIEnv *env, const char *message, int duration);
+	void    engineLoaded(JNIEnv *env, int status);
+	Bitmap  *loadImage(JNIEnv *env);
+	void    printABI();
+	void 	onFPSUpdate(JNIEnv *env, float cpu, float gpu);
+#endif
+	void    genRandomDiskPoint(float disk_radius, float &x, float &y); // Z will be zero
+	float   myRand(float min, float max);
+	// add "addVal" to "*toSum" atomically
 #define ATOMIC_ADD(toSum, addVal) { __sync_fetch_and_add(toSum, addVal); }
 #define ATOMIC_INC(toSum) ATOMIC_ADD(toSum, 1)
-/*
-    inline void     atomicAdd(unsigned long *toSum, unsigned long addVal)
-    {
-        __sync_fetch_and_add(toSum, addVal);
-    }
+	/*
+	   inline void     atomicAdd(unsigned long *toSum, unsigned long addVal)
+	   {
+	   __sync_fetch_and_add(toSum, addVal);
+	   }
 
-    inline void     atomicInc(unsigned long *toSum)
-    {
-        atomicAdd(toSum, 1);
-    }
-*/
+	   inline void     atomicInc(unsigned long *toSum)
+	   {
+	   atomicAdd(toSum, 1);
+	   }
+	 */
 };
 
 #define  OFFSETOF(elem, st) ((size_t)&(((st*)0)->elem))

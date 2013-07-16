@@ -13,4 +13,6 @@ public class ParticlesCPP{
 	public static native void unpause();
 	public static native void beat(float intensity, float speed); // 0.05, 0.5 good values
 	public static native void randomize();
+	public static native int  getBuild();
+	public static native void setZoom(float zoom);
 }

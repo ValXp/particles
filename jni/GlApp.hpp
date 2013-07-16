@@ -35,6 +35,16 @@ class GlApp
     // Time management
     void            countFPS();
 
+    inline void            setZoom(float zoom)
+    {
+        m_zoom = zoom;
+    }
+
+    inline float            getZoom()
+    {
+        return m_zoom;
+    }
+
     private:
 
     template<typename T, size_t N>
@@ -110,6 +120,9 @@ class GlApp
     time_t          m_last;
     long            m_engineLast;
     long            m_gpuLast;
+
+    // zoom value
+    float           m_zoom;
 
     // Particle engine
     ParticleEngine *m_engine;

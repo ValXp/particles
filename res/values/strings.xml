@@ -15,8 +15,10 @@
     <string name="settings_particle_size">psize</string>
     <string name="settings_particle_blur">blur</string>
     <string name="settings_name">particles_settings</string>
+    <string name="settings_show_fps">show_fps</string>
     <string name="title_activity_java_engine_test">JavaEngineTestActivity</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-
+	<string name="loading">Loading...</string>
+	<string name="too_many_particles">Cannot load engine. Try less particles</string>
+	<string name="Show_Fps">Show FPS</string>
 </resources>
