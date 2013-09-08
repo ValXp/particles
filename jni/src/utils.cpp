@@ -1,19 +1,19 @@
 #include <math.h>
 #include <stdlib.h>
-#ifndef PC_VERSION
+#ifdef ANDROID
 # include <jni.h>
 # include <cpu-features.h>
 #endif
 #include "utils.h"
 
 
-#ifndef PC_VERSION
 void Utils::printGLString(const char *name, GLenum s) {
 	const char *v = (const char *) glGetString(s);
 	LOGI("GL %s = %s\n", name, v);
 }
 
 
+#ifdef ANDROID
 
 void Utils::printABI()
 {
@@ -148,7 +148,8 @@ void Utils::onFPSUpdate(JNIEnv *env, float cpu, float gpu)
 }
 
 
-#else
+#else // ANDROID
+
 void LOGI(const char *fmt, ...)
 {
 	va_list vl;
@@ -166,7 +167,7 @@ void LOGE(const char *fmt, ...)
 }
 
 
-#endif
+#endif // ! ANDROID
 
 void Utils::genRandomDiskPoint(float disk_radius, float &x, float &y) // Z will be zero
 {

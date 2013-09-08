@@ -6,10 +6,10 @@
 
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 
-#ifndef PC_VERSION
-# include <android/log.h>
 # include <GLES2/gl2.h>
 # include <GLES2/gl2ext.h>
+#ifdef ANDROID
+# include <android/log.h>
 # include <jni.h>
 # include "Bitmap.h"
 # define  LOG_TAG    "libParticles"
@@ -30,7 +30,6 @@ void LOGE(const char *fmt, ...);
 namespace Utils
 {
 
-#ifndef PC_VERSION
 
 	void printGLString(const char *name, GLenum s);
 	inline void checkGlError(const char* op, int line = -1)
@@ -46,6 +45,7 @@ namespace Utils
 		}
 #endif
 	}
+#ifdef ANDROID
 	char    *loadRessource(JNIEnv *env, const char *ressource);
 	void    printMessage(JNIEnv *env, const char *message, int duration);
 	void    engineLoaded(JNIEnv *env, int status);

@@ -1,7 +1,9 @@
 #ifndef GLAPP_H_
 # define GL_APP_H_
 
-#include <jni.h>
+#ifdef ANDROID
+# include <jni.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -10,6 +12,7 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
+#include <string.h>
 #include "Matrix4x4.hpp"
 #include "utils.h"
 #include "ParticleEngine.h"
@@ -22,7 +25,11 @@ class GlApp
 {
     public:
 
+#ifdef ANDROID
     GlApp(int ptSize, bool motionBlur, int width, int height, JNIEnv *jenv);
+#else
+    GlApp(int ptSize, bool motionBlur, int width, int height);
+#endif
 
     ~GlApp();
 
@@ -72,8 +79,12 @@ class GlApp
     {
         return N;
     }
+#ifdef ANDROID
     //  Creates a shader program from an android resource
     ShaderProgram   *createProgramFromResource(const char *vertexResource, const char *fragmentResource);
+#else
+    ShaderProgram   *createProgram(const char *vertex, const char *fragment);
+#endif
 
     // Creates the frameBuffer texture for motion blur
     void            genBlurText(int w, int h);
@@ -153,8 +164,10 @@ class GlApp
     // Particle engine
     ParticleEngine *m_engine;
 
+#ifdef ANDROID
     // jni environment
     JNIEnv          *m_jenv;
+#endif
 };
 
 

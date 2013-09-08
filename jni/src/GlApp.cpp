@@ -1,8 +1,13 @@
 #include "GlApp.hpp"
 using namespace Utils;
 
+#ifdef ANDROID
 GlApp::GlApp(int ptSize, bool motionBlur, int width, int height, JNIEnv *jenv) : 
 	m_ptSize(ptSize), m_motionBlur(motionBlur), m_width(width), m_height(height), m_blur(0.8), m_jenv(jenv)
+#else
+GlApp::GlApp(int ptSize, bool motionBlur, int width, int height) : 
+	m_ptSize(ptSize), m_motionBlur(motionBlur), m_width(width), m_height(height), m_blur(0.8)
+#endif
 {
 	GLfloat screenTarget[]  = {    -1.0f,  -1.0f,
 		-1.0f,  1.0f,
@@ -28,18 +33,16 @@ GlApp::GlApp(int ptSize, bool motionBlur, int width, int height, JNIEnv *jenv) :
 	m_last = time(0);
 	m_engineLast = 0;
 	m_gpuLast = 0;
-    m_zoom = 0;
+	m_zoom = 0;
 }
 
 
 GlApp::~GlApp()
 {
     // I don't really need to clean the current context since it will be already destroyed at this time
-    /*
 	delete m_particlesProgram;
 	delete m_blurProgram;
 	delete m_screenProgram;
-    */
 }
 
 void            GlApp::genBlurText(int w, int h)
@@ -77,17 +80,61 @@ void            GlApp::genBlurText(int w, int h)
 	checkGlError(__FILE__, __LINE__);
 }
 
+#ifndef ANDROID
+
+#define RESOURCE_START(name) (_binary____assets_##name##_glsl_start)
+#define RESOURCE_END(name) (_binary____assets_##name##_glsl_end)
+#define RESOURCE_PTR(name) (RESOURCE_START(name))
+
+#define RESOURCE_DECLARE(name)	extern "C"\
+				{\
+				    extern char RESOURCE_START(name)[];\
+				    extern char RESOURCE_END(name)[];\
+				}
+#define RESOURCE_INIT(name) {\
+				char *ptBegin = RESOURCE_START(name);\
+				char *ptEnd = RESOURCE_END(name);\
+				int size = (int)(ptEnd - ptBegin);\
+				RESOURCE_PTR(name)[size - 1] = 0;\
+			    }
+
+RESOURCE_DECLARE(ParticleFS)
+RESOURCE_DECLARE(ParticleVS)
+RESOURCE_DECLARE(ScreenFS)
+RESOURCE_DECLARE(ScreenVS)
+RESOURCE_DECLARE(BlurFS)
+
+#endif
+
 bool            GlApp::setupGraphics(int w, int h)
 {
+
 	printGLString("Version", GL_VERSION);
 	printGLString("Vendor", GL_VENDOR);
 	printGLString("Renderer", GL_RENDERER);
 	printGLString("Extensions", GL_EXTENSIONS);
 	LOGI("setupGraphics(%d, %d)", w, h);
 
+#ifdef ANDROID
 	m_particlesProgram = createProgramFromResource("ParticleVS.glsl", "ParticleFS.glsl");
 	m_blurProgram = createProgramFromResource("ScreenVS.glsl", "BlurFS.glsl");
 	m_screenProgram = createProgramFromResource("ScreenVS.glsl", "ScreenFS.glsl");
+#else
+	RESOURCE_INIT(ParticleFS)
+	RESOURCE_INIT(ParticleVS)
+	RESOURCE_INIT(ScreenFS)
+	RESOURCE_INIT(ScreenVS)
+	RESOURCE_INIT(BlurFS)
+
+	m_particlesProgram = createProgram( RESOURCE_PTR(ParticleVS), 
+					    RESOURCE_PTR(ParticleFS));
+
+	m_blurProgram = createProgram(	RESOURCE_PTR(ScreenVS), 
+					RESOURCE_PTR(BlurFS));
+
+	m_screenProgram = createProgram(RESOURCE_PTR(ScreenVS), 
+					RESOURCE_PTR(ScreenFS));
+#endif
 
 	m_ptSizeHandle = glGetUniformLocation(m_particlesProgram->getProgram(), "ptSize");
 	checkGlError("glGetUniformLocation");
@@ -113,7 +160,7 @@ bool            GlApp::setupGraphics(int w, int h)
 	m_positionHandleParticles = glGetAttribLocation(m_particlesProgram->getProgram(), "vPosition");
 	checkGlError("glGetAttribLocation");
 
-    m_blurHandle = glGetUniformLocation(m_blurProgram->getProgram(), "blur");
+	m_blurHandle = glGetUniformLocation(m_blurProgram->getProgram(), "blur");
 	checkGlError("glGetUniformLocation");
 
 	m_mvpHandle = glGetUniformLocation(m_particlesProgram->getProgram(), "mvp");
@@ -132,6 +179,7 @@ bool            GlApp::setupGraphics(int w, int h)
 	return true;
 }
 
+#ifdef ANDROID
 
 ShaderProgram   *GlApp::createProgramFromResource(const char *vertexResource, const char *fragmentResource)
 {
@@ -146,6 +194,19 @@ ShaderProgram   *GlApp::createProgramFromResource(const char *vertexResource, co
 	}
 	return program;
 }
+
+#else
+ShaderProgram   *GlApp::createProgram(const char *vfile, const char *ffile)
+{
+	ShaderProgram *program = new ShaderProgram(vfile, ffile);
+	if (program->hasError()) {
+		LOGE("Could not create program. Using \"%s\" and \"%s\"", vfile, ffile);
+		exit(EXIT_FAILURE);
+	}
+	return program;
+}
+
+#endif
 
 void            GlApp::draw()
 {
@@ -252,7 +313,9 @@ void            GlApp::countFPS()
 			float CPUFPS = (float)engineFrameNb / (float)elapsed;
 			LOGI("Step : %ld GPU FPS : %f\nCPU FPS : %fCPU sleep (ms) : %ld \n", m_stepCount, GPUFPS, CPUFPS, m_engine->getTimeSlept());
 			LOGI("Engine Paused : %s ,  Engine Emitting : %s\n", SHOW_BOOL(m_engine->paused()), SHOW_BOOL(m_engine->emitting()));
+#ifdef ANDROID
 			Utils::onFPSUpdate(m_jenv, CPUFPS, GPUFPS);
+#endif
 		}
 		/*
 		   if (!engine->paused() && stepCount > 2)

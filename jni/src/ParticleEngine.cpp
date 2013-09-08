@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#ifndef PC_VERSION
+#ifdef ANDROID
 #include <cpu-features.h>
 #endif
 #include "ParticleEngine.h"
@@ -192,12 +192,12 @@ ParticleEngine::ParticleEngine(uint max_part_nbr, uint threadNb)
 {
     LOGI("Engine initialization : %d particles\n", max_part_nbr);
 
-#ifndef PC_VERSION
+#ifdef ANDROID
     LOGI("Cpu count : %d\n", android_getCpuCount());
 #endif
   
     m_threadNb = threadNb;
-#ifndef PC_VERSION
+#ifdef ANDROID
     if (threadNb == 0)
         m_threadNb = android_getCpuCount() - 1;
 #endif
@@ -234,7 +234,7 @@ ParticleEngine::ParticleEngine(uint max_part_nbr, uint threadNb)
 
     initParticles();
 
-    for (int i = 0; i < m_threadNb; ++i)
+    for (unsigned int i = 0; i < m_threadNb; ++i)
     {
         m_args[i].die = false;
         m_args[i].id = i;

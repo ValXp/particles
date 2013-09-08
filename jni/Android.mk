@@ -19,8 +19,8 @@ include $(CLEAR_VARS)
 
 APP_ABI := armeabi-v7a armeabi x86 mips
 LOCAL_MODULE    := libParticles
-LOCAL_CFLAGS    := -Werror -DBUILD_NB=$(BUILD) -O3
-LOCAL_SRC_FILES := jniCalls.cpp utils.cpp ParticleEngine.cpp Bitmap.cpp ShaderProgram.cpp GlApp.cpp
+LOCAL_CFLAGS    := -Iinc  -DBUILD_NB=$(BUILD) -O3 -DANDROID
+LOCAL_SRC_FILES := src/jniCalls.cpp src/utils.cpp src/ParticleEngine.cpp src/Bitmap.cpp src/ShaderProgram.cpp src/GlApp.cpp
 LOCAL_LDLIBS    := -llog -lGLESv2 
 LOCAL_STATIC_LIBRARIES := cpufeatures
 LOCAL_LDFLAGS += -fuse-ld=bfd
