@@ -54,4 +54,12 @@ public class PreferencesHelper {
     public static boolean getShowFps(Context ctx) {
         return getPrefs(ctx).getBoolean(ctx.getString(R.string.settings_show_fps), false);
     }
+    
+    public static int sizeToSeek(float size) {
+        return (int) ((size - 1) * 10);
+    }
+    
+    public static float seekToSize(int seek) {
+        return 1.0f + (float)seek / 10.0f;
+    }
 }

@@ -15,4 +15,8 @@ public class ParticlesCPP{
 	public static native void randomize();
 	public static native int  getBuild();
 	public static native void setZoom(float zoom);
+	public static native void setBlur(float blur); // 0.0 to 1.0
+	public static native float getBlur();
+	public static native float getSize();
+	public static native void setSize(float size);
 }

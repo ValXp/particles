@@ -46,7 +46,7 @@ public class Settings extends Activity {
         pNumberField.setText("" + (pNumber > 0 ? pNumber : ""));
         float pSize = PreferencesHelper.getParticleSize(this);
         size.setText("" + pSize);
-        seek.setProgress((int) ((pSize - 1) * 10));
+        seek.setProgress(PreferencesHelper.sizeToSeek(pSize));
         check.setChecked(PreferencesHelper.getMotionBlur(this));
         showFps.setChecked(PreferencesHelper.getShowFps(this));
         seek.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -58,7 +58,7 @@ public class Settings extends Activity {
 
             public void onProgressChanged(SeekBar seekBar, int progress,
                     boolean fromUser) {
-                size.setText("" + (1.0 + progress / 10.0));
+                size.setText("" + PreferencesHelper.seekToSize(progress));
             }
         });
         pNumberField.setOnKeyListener(new OnKeyListener() {
@@ -110,7 +110,7 @@ public class Settings extends Activity {
         } else
         {
             PreferencesHelper.setParticleNumber(this, pnumber);
-            PreferencesHelper.setParticleSize(this, 1.0f + partSize / 10.0f);
+            PreferencesHelper.setParticleSize(this, PreferencesHelper.seekToSize(partSize));
             PreferencesHelper.setMotionBlur(this, blur);
             PreferencesHelper.setShowFps(this, showFps);
             if (alreadyLaunched)

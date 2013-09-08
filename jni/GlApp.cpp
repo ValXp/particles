@@ -2,7 +2,7 @@
 using namespace Utils;
 
 GlApp::GlApp(int ptSize, bool motionBlur, int width, int height, JNIEnv *jenv) : 
-	m_ptSize(ptSize), m_motionBlur(motionBlur), m_width(width), m_height(height), m_jenv(jenv)
+	m_ptSize(ptSize), m_motionBlur(motionBlur), m_width(width), m_height(height), m_blur(0.8), m_jenv(jenv)
 {
 	GLfloat screenTarget[]  = {    -1.0f,  -1.0f,
 		-1.0f,  1.0f,
@@ -113,21 +113,25 @@ bool            GlApp::setupGraphics(int w, int h)
 	m_positionHandleParticles = glGetAttribLocation(m_particlesProgram->getProgram(), "vPosition");
 	checkGlError("glGetAttribLocation");
 
+    m_blurHandle = glGetUniformLocation(m_blurProgram->getProgram(), "blur");
+	checkGlError("glGetUniformLocation");
+
 	m_mvpHandle = glGetUniformLocation(m_particlesProgram->getProgram(), "mvp");
 	checkGlError("glGetUniformLocation");
-	LOGI("glGetUniformLocation(\"mvp\") = %d\n",
-			m_mvpHandle);
+
 	if (m_motionBlur)
 	{
 		genBlurText(w, h);
+        setBlur(m_blur); // set default value
 	}
 
-	glViewport(0, 0, w, h);
+	glViewport(0, 0, w,  h);
 	checkGlError(__FILE__, __LINE__);
 	m_model.setidentity();
 	m_projection.setProjection(0.1, 20, 45, ((float)w)/((float)h));
 	return true;
 }
+
 
 ShaderProgram   *GlApp::createProgramFromResource(const char *vertexResource, const char *fragmentResource)
 {
@@ -159,6 +163,7 @@ void            GlApp::draw()
 		checkGlError(__FILE__, __LINE__);
 
 		m_blurProgram->enable();
+        glUniform1f(m_blurHandle, m_blur);
 		checkGlError(__FILE__, __LINE__);
 		glActiveTexture(GL_TEXTURE0);
 		checkGlError(__FILE__, __LINE__);

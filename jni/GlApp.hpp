@@ -40,9 +40,29 @@ class GlApp
         m_zoom = zoom;
     }
 
-    inline float            getZoom()
+    inline float            getZoom() const
     {
         return m_zoom;
+    }
+
+    inline void         setBlur(float blur)
+    {
+        m_blur = blur;
+    }
+
+    inline float        getBlur() const
+    {
+        return m_blur;
+    }
+
+    inline void         setSize(float size)
+    {
+        m_ptSize = size;
+    }
+
+    inline float        getSize() const
+    {
+        return m_ptSize;
     }
 
     private:
@@ -96,6 +116,9 @@ class GlApp
     // Point size handle
     GLuint          m_ptSizeHandle;
 
+    // Blur intensity handle
+    GLuint          m_blurHandle;
+
     // GL textures
     GLuint          m_blurTexture;
     GLuint          m_texFrameBuffer;
@@ -123,6 +146,9 @@ class GlApp
 
     // zoom value
     float           m_zoom;
+
+    // blur intensity
+    float           m_blur;
 
     // Particle engine
     ParticleEngine *m_engine;

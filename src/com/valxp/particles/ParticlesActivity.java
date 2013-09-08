@@ -9,6 +9,8 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class ParticlesActivity extends Activity {
@@ -58,9 +60,10 @@ public class ParticlesActivity extends Activity {
                 int length = fft.length < 200 ? fft.length : 200;
                 long cur = SystemClock.elapsedRealtime();
 
-                for (int i = 2; i < length; i += 2)
+                for (int i = 2; i < length / 4; i += 2)
                 {
-                    sum += Math.abs(fft[i]) / (i * 0.1);
+                    float amp = (float) (((fft[i] * 2.0) + (fft[i+1] * 2.0)) / 2.0);
+                    sum += Math.abs(amp / (i * 0.1));
                 }
                 if (cur - last >= 1000)
                 {
@@ -73,6 +76,8 @@ public class ParticlesActivity extends Activity {
                     last = cur;
                 }
                 sum /= (float) length;
+//                ParticlesCPP.setSize(sum / 6);
+//                ParticlesCPP.setBlur(sum / 6);
                 if (sum > max || sum > max - (max / 5))
                 {
                     max = sum;
@@ -102,10 +107,24 @@ public class ParticlesActivity extends Activity {
                     mCpu = (TextView) findViewById(R.id.cpu);
                     mGpu = (TextView) findViewById(R.id.gpu);
                     mZoom = (TextView) findViewById(R.id.zoom);
+                    mBlur = (SeekBar) findViewById(R.id.blur_seek);
+                    mSize = (SeekBar) findViewById(R.id.size_seek);
+
+                    mBlur.setMax(50);
+                    mBlur.setProgress((int) ((ParticlesCPP.getBlur() - 0.5) * 100.0));
+                    mBlur.setOnSeekBarChangeListener(new SeekChange());
+
+                    mSize.setMax(100);
+                    mSize.setProgress(PreferencesHelper.sizeToSeek(ParticlesCPP.getSize()));
+                    mSize.setOnSeekBarChangeListener(new SeekChange());
+
                     if (showFps) {
                         mCpu.setVisibility(View.VISIBLE);
                         mGpu.setVisibility(View.VISIBLE);
                         mZoom.setVisibility(View.VISIBLE);
+                        if (PreferencesHelper.getMotionBlur(getApplicationContext()))
+                            mBlur.setVisibility(View.VISIBLE);
+                        mSize.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -116,7 +135,32 @@ public class ParticlesActivity extends Activity {
     }
 
     TextView mCpu, mGpu, mZoom;
+    SeekBar mBlur, mSize;
     boolean running = true;
+
+    private class SeekChange implements OnSeekBarChangeListener {
+
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            if (seekBar.equals(mBlur))
+                ParticlesCPP.setBlur(((float) progress / 100.0f) + 0.5f);
+            if (seekBar.equals(mSize))
+                ParticlesCPP.setSize(PreferencesHelper.seekToSize(progress));
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+            // TODO Auto-generated method stub
+
+        }
+
+    }
 
     public void onFPSUpdate(final float cpu, final float gpu) {
         runOnUiThread(new Runnable() {
@@ -135,7 +179,7 @@ public class ParticlesActivity extends Activity {
             return;
         mZoom.setText("Zoom : " + String.format("%.1f", zoom) + "x");
     }
-    
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();

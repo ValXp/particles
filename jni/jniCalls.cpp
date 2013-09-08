@@ -27,8 +27,37 @@ extern "C" {
 	JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_beat(JNIEnv * env, jobject obj, jfloat intesity, jfloat speed);
 	JNIEXPORT int JNICALL Java_com_valxp_particles_ParticlesCPP_getBuild(JNIEnv * env, jobject obj);
     JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_setZoom(JNIEnv * env, jobject obj, jfloat zoom);
-
+    JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_setBlur(JNIEnv * env, jobject obj, jfloat blur);
+    JNIEXPORT float JNICALL Java_com_valxp_particles_ParticlesCPP_getBlur(JNIEnv * env, jobject obj);
+    JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_setSize(JNIEnv * env, jobject obj, jfloat size);
+    JNIEXPORT float JNICALL Java_com_valxp_particles_ParticlesCPP_getSize(JNIEnv * env, jobject obj);
 };
+
+JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_setSize(JNIEnv * env, jobject obj, jfloat size)
+{
+    if (app)
+        app->setSize(size);
+}
+
+JNIEXPORT float JNICALL Java_com_valxp_particles_ParticlesCPP_getSize(JNIEnv * env, jobject obj)
+{
+    if (app)
+        return app->getSize();
+    return 0;
+}
+
+JNIEXPORT float JNICALL Java_com_valxp_particles_ParticlesCPP_getBlur(JNIEnv * env, jobject obj)
+{
+    if (app)
+        return app->getBlur();
+    return 0;
+}
+
+JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_setBlur(JNIEnv * env, jobject obj, jfloat blur)
+{
+    if (app)
+        app->setBlur(blur);
+}
 
 JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_setZoom(JNIEnv * env, jobject obj, jfloat zoom)
 {
@@ -95,7 +124,7 @@ JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_init(JNIEnv * env, 
 	engine->unpause();
 	app = new GlApp(static_cast<int>(ptSize), motionBlur != 0 ? true : false, static_cast<int>(width), static_cast<int>(height), jenv);
 	app->setEngine(engine);
-	Utils::printMessage(env, "Starting engine !", SHORT_DURATION);
+	//Utils::printMessage(env, "Starting engine !", SHORT_DURATION);
 	Utils::engineLoaded(env, 0);
 }
 

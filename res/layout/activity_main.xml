@@ -22,12 +22,25 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/cpu"
             android:visibility="gone" />
-        
+
         <TextView
             android:id="@+id/zoom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/gpu"
+            android:visibility="gone" />
+
+        <SeekBar
+            android:id="@+id/blur_seek"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/size_seek"
+            android:visibility="gone" />
+        <SeekBar
+            android:id="@+id/size_seek"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:visibility="gone" />
 
         <RelativeLayout
