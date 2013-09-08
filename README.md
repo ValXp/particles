@@ -9,7 +9,13 @@ This is a transfer from my mercurial repository on bitbucket
 To compile, you need to install the android NDK : http://developer.android.com/tools/sdk/ndk/index.html
 Add the ndk folder in you PATH (in .bashrc : PATH=$PATH':~/android-ndk/' )
 Go to the jni folder : 
-chmod +x compile.sh
-./compile.sh
+
+make android
+
 This will create the shared object.
 Import the project in eclipse, build and run.
+
+For the desktop version (will use GLES2 drawing) just do :
+make
+./particles cpu_nb particles_nb
+
