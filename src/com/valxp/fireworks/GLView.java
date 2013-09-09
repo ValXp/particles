@@ -1,5 +1,5 @@
 
-package com.valxp.particles;
+package com.valxp.fireworks;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+
+import com.valxp.particles.ParticlesCPP;
 
 public class GLView extends GLSurfaceView {
     private static int pnumber = 42;

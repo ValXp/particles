@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.valxp.particles"
+    package="com.valxp.fireworks"
     android:installLocation="auto"
-    android:versionCode="6"
-    android:versionName="1.3" >
+    android:versionCode="1"
+    android:versionName="1" >
 
     <uses-sdk
         android:minSdkVersion="9"
@@ -21,7 +21,7 @@
 
         
         <activity
-            android:name="com.valxp.particles.Settings"
+            android:name="com.valxp.fireworks.Settings"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_main"
             android:launchMode="singleTask"
@@ -31,6 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.valxp.particles.ParticlesActivity"></activity>
+        <activity android:name="com.valxp.fireworks.ParticlesActivity"></activity>
     </application>
 </manifest>

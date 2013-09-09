@@ -195,7 +195,7 @@ class ParticleEngine
     private:
     void    moveWave();
     void    initParticles();
-    void    initParticle(uint idx);
+    void    initParticle(uint idx, float x, float y, float z, float xs, float ys, float zs);
     
     // Particles storage, aligned arrays easier to upload to opengl 
     // don't need colors anymore

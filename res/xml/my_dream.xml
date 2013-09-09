@@ -1,2 +1,2 @@
 <dream xmlns:android="http://schemas.android.com/apk/res/android"
-     android:settingsActivity="com.valxp.particles/.Settings" />
+     android:settingsActivity="com.valxp.fireworks/.Settings" />

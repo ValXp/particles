@@ -1,5 +1,5 @@
 
-package com.valxp.particles;
+package com.valxp.fireworks;
 
 import android.app.Activity;
 import android.media.audiofx.Visualizer;
@@ -12,6 +12,9 @@ import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+
+import com.valxp.particles.JavaCaller;
+import com.valxp.particles.ParticlesCPP;
 
 public class ParticlesActivity extends Activity {
     public static final int RESULT_FAILURE = 424242;

@@ -3,6 +3,8 @@ package com.valxp.particles;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.valxp.fireworks.ParticlesActivity;
+
 import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;

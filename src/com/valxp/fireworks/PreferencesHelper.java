@@ -1,5 +1,7 @@
 
-package com.valxp.particles;
+package com.valxp.fireworks;
+
+import com.valxp.fireworks.R;
 
 import android.content.Context;
 import android.content.SharedPreferences;

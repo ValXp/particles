@@ -10,22 +10,19 @@
 #include "utils.h"
 
 
-void    ParticleEngine::initParticle(uint idx)
+void    ParticleEngine::initParticle(uint idx, float x, float y, float z, float xs, float ys, float zs)
 {
-    POS_X(idx) = m_pos.x;
-    POS_Y(idx) = m_pos.y;
-    POS_Z(idx) = m_pos.z;
+    
+    //Utils::genRandomDiskPoint(RAND, x, y);
+    float rand = RAND / 10;
+    PSPEED_X(idx) = Utils::myRand(-rand, rand);
+    PSPEED_Y(idx) = Utils::myRand(-rand, rand);
+    PSPEED_Z(idx) = Utils::myRand(-rand, rand);
 
 
-
-    PSPEED_Y(idx) = (SPEED_Y * Utils::myRand(RAND / 1.2, RAND)) + m_user.y;
-    // sampling a point in a disk to have a round projection of particles
-    float x, y;
-    //x = Utils::myRand(-RAND, RAND);
-    //y = Utils::myRand(-RAND, RAND);
-    Utils::genRandomDiskPoint(RAND, x, y);
-    PSPEED_X(idx) = (SPEED_X * x ) + m_user.x;
-    PSPEED_Z(idx) = (SPEED_Z * y ) + m_user.z;
+    POS_X(idx) = x;
+    POS_Y(idx) = y;
+    POS_Z(idx) = z;
 
     /*
     COLOR_R(idx) = (float)Utils::myRand(0, 255) / 255.0f;
@@ -33,7 +30,7 @@ void    ParticleEngine::initParticle(uint idx)
     COLOR_B(idx) = (float)Utils::myRand(0, 255) / 255.0f;
     */
 
-    m_active[idx] = (int)Utils::myRand(-50, 0);
+    m_active[idx] = 1;//(int)Utils::myRand(-50, 0);
 }
 
 void    ParticleEngine::initParticles()
@@ -67,7 +64,13 @@ void    ParticleEngine::initParticles()
         //throw EngineException(MEM_ALLOC_ERROR_MSG);
     }
     for (uint cur = 0; cur < m_max_part_nbr; ++cur)
-        initParticle(cur);
+    {
+	float x, y, z;
+	x = Utils::myRand(-LIMIT_X, LIMIT_X);
+	y = Utils::myRand(-LIMIT_Y, LIMIT_Y);
+	z = Utils::myRand(-LIMIT_Z, LIMIT_Z);
+        initParticle(cur, x, y, z, 0, 0, 0);
+    }
 }
 
 void    *threadFunc(void *arg)
@@ -127,6 +130,60 @@ void    ParticleEngine::_step(ThreadArg &arg)
     uint particlePerThread = m_part_nbr / m_threadNb;
     uint    start = fid * particlePerThread;
     uint    end = (fid + 1) * particlePerThread;
+
+
+    static float x, y, z;
+    static float xs, ys, zs;
+    static float len = 0;
+
+    //PSPEED_Y(idx) = (SPEED_Y * Utils::myRand(RAND / 1.2, RAND)) + m_user.y;
+    // sampling a point in a disk to have a round projection of particles
+    if (--len < 0)
+    {
+	float rand = RAND / 3;
+	xs = Utils::myRand(-rand, rand);
+	ys = Utils::myRand(-rand, rand);
+	zs = Utils::myRand(-rand, rand);
+	len = Utils::myRand(0, 500);
+    }
+
+    x += xs;
+    y += ys;
+    z += zs;
+
+    if (x <= -LIMIT_X)
+    {
+	x = -LIMIT_X;
+	xs = -xs;
+    }
+    if (x >= LIMIT_X)
+    {
+	x = LIMIT_X;
+	xs = -xs;
+    }
+    if (y <= -LIMIT_Y)
+    {
+	y = -LIMIT_Y;
+	ys = -ys;
+    }
+    if (y >= LIMIT_Y)
+    {
+	y = LIMIT_Y;
+	ys = -ys;
+    }
+    if (z <= -LIMIT_Z)
+    {
+	z = -LIMIT_Z;
+	zs = -zs;
+    }
+    if (z >= LIMIT_Z)
+    {
+	z = LIMIT_Z;
+	zs = -zs;
+    }
+
+
+
     // Begin loop
     for (uint i = start; i < end; ++i)
     {
@@ -140,11 +197,11 @@ void    ParticleEngine::_step(ThreadArg &arg)
             if (POS_Y(i) > LIMIT_Y || POS_Y(i) < -LIMIT_Y)/* ||
                 POS_X(i) > LIMIT_X || POS_X(i) < -LIMIT_X ||
                 POS_Z(i) > LIMIT_Z || POS_Z(i) < -LIMIT_Z)*/
-                initParticle(i);
+                initParticle(i, x, y, z, xs, ys, zs);
            
             // consider the center of the cone at 0,CONE_TOP_Y,0
             // it was supposed to be a cone....
-            if (POS_Y(i) <= CONE_TOP_Y && POS_Y(i) >= CONE_BOT_Y && PSPEED_Y(i) <= 0)
+            if (0)//POS_Y(i) <= CONE_TOP_Y && POS_Y(i) >= CONE_BOT_Y && PSPEED_Y(i) <= 0)
             {
                // compute distance to the center
                float dist = ( POS_X(i) * POS_X(i)) + (POS_Z(i) * POS_Z(i));
