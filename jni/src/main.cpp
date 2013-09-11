@@ -38,11 +38,11 @@ int main(int ac, char **av)
 
 
     ParticleEngine *engine = new ParticleEngine(part_number, cpu_number);
-    GlApp *app = new GlApp(1, true, WIDTH, HEIGHT);
+    GlApp *app = new GlApp(3, true, WIDTH, HEIGHT);
     app->setEngine(engine);
     engine->start_emit();
     engine->unpause();
-    app->setZoom(-10);
+    app->setZoom(-25);
     while (42)
     {
 

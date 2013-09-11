@@ -175,7 +175,7 @@ bool            GlApp::setupGraphics(int w, int h)
 	glViewport(0, 0, w,  h);
 	checkGlError(__FILE__, __LINE__);
 	m_model.setidentity();
-	m_projection.setProjection(0.1, 20, 45, ((float)w)/((float)h));
+	m_projection.setProjection(0.1, 50, 45, ((float)w)/((float)h));
 	return true;
 }
 
@@ -264,7 +264,8 @@ void            GlApp::draw()
 	checkGlError("glVertexAttribPointer");
 	glEnableVertexAttribArray(m_positionHandleParticles);
 	checkGlError("glEnableVertexAttribArray");
-	glDrawArrays(GL_POINTS, 0, m_engine->particleNumber());
+	glDrawArrays(GL_POINTS, 0, m_engine->particleNumber() -1);
+
 	checkGlError("glDrawArrays");
 
 	if (m_motionBlur)
