@@ -6,9 +6,9 @@
 # include "utils.h"
 
 #   define RAND .3
-#   define LIMIT_X 9.0
-#   define LIMIT_Y 9.0
-#   define LIMIT_Z 9.0
+#   define LIMIT_X 3.0
+#   define LIMIT_Y 6.0
+#   define LIMIT_Z 3.0
 #   define GRAVITY .002
 #   define SPEED_X .05
 #   define SPEED_Y .5
@@ -36,7 +36,7 @@
 #   define PSPEED_Y(idx) (*(m_speed + (idx * 3) + 1))
 #   define PSPEED_Z(idx) (*(m_speed + (idx * 3) + 2))
 
-#   define MAX_FRAME_TIME_MS 16 // corresponds to 60 FPS
+#   define MAX_FRAME_TIME_MS 40 // corresponds to 24 FPS
 
 #   define MEM_ALLOC_ERROR_MSG  "Too many particles : try less, or restart your device"
 #   define MEM_ALLOC_THREAD_ERROR_MSG   "Fatal error. Cannot allocate thread memory"

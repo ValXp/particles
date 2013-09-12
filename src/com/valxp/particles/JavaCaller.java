@@ -3,9 +3,8 @@ package com.valxp.particles;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.valxp.fireworks.ParticlesActivity;
-
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +14,7 @@ import android.widget.Toast;
 
 public class JavaCaller {
 	
-	public static ParticlesActivity context = null;
+	public static Context context = null;
 	public static String readAsset(String name)
 	{
 		if (context == null)
@@ -103,10 +102,10 @@ public class JavaCaller {
 	}
 	
 	public static void onEngineLoaded(int status) {
-	    context.onEngineLoaded(status);
+//	    context.onEngineLoaded(status);
 	}
 	
 	public static void onFPSUpdate(float cpu, float gpu) {
-	    context.onFPSUpdate(cpu, gpu);
+//	    context.onFPSUpdate(cpu, gpu);
 	}
 }

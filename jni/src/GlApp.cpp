@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "GlApp.hpp"
 using namespace Utils;
 
@@ -34,6 +35,7 @@ GlApp::GlApp(int ptSize, bool motionBlur, int width, int height) :
 	m_engineLast = 0;
 	m_gpuLast = 0;
 	m_zoom = 0;
+	m_lastMs = 0;
 }
 
 
@@ -301,6 +303,17 @@ void            GlApp::draw()
 
 void            GlApp::countFPS()
 {
+	static long gpuSlept = 0;
+	clock_t now = TIME_MS();
+	clock_t delta = now - m_lastMs;
+	if (delta < MAX_FRAME_TIME_MS && delta >= 0)
+	{
+	    long frame = (MAX_FRAME_TIME_MS - delta);
+	    gpuSlept += frame;
+	    usleep(1000 * frame);
+	}
+	m_lastMs = TIME_MS();
+
 	time_t      current = time(0);
 	++m_stepCount;
 	if (current - m_last > 1)
@@ -312,7 +325,7 @@ void            GlApp::countFPS()
 		{
 			float GPUFPS = (float)gpuFrameNb / (float)elapsed;
 			float CPUFPS = (float)engineFrameNb / (float)elapsed;
-			LOGI("Step : %ld GPU FPS : %f\nCPU FPS : %fCPU sleep (ms) : %ld \n", m_stepCount, GPUFPS, CPUFPS, m_engine->getTimeSlept());
+			LOGI("Step : %ld GPU FPS : %f\nCPU FPS : %fCPU sleep (ms) : %ld GPU sleep : %ld\n", m_stepCount, GPUFPS, CPUFPS, m_engine->getTimeSlept(), gpuSlept);
 			LOGI("Engine Paused : %s ,  Engine Emitting : %s\n", SHOW_BOOL(m_engine->paused()), SHOW_BOOL(m_engine->emitting()));
 #ifdef ANDROID
 			Utils::onFPSUpdate(m_jenv, CPUFPS, GPUFPS);

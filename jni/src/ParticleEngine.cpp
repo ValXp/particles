@@ -140,7 +140,7 @@ void    ParticleEngine::_step(ThreadArg &arg)
     // sampling a point in a disk to have a round projection of particles
     if (--len < 0)
     {
-	float rand = RAND / 3;
+	float rand = RAND / 8;
 	xs = Utils::myRand(-rand, rand);
 	ys = Utils::myRand(-rand, rand);
 	zs = Utils::myRand(-rand, rand);

@@ -115,8 +115,12 @@ JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_init(JNIEnv * env, 
 	app = 0;
 	LOGI("Init ParticlesLib Build nb : %d\n", BUILD_NB);
 	Utils::printABI();
-	if (!engine)
+	if (!engine || engine->particleNumber() != pnumber)
+	{
+		if (engine)
+		    delete engine;
 		engine = new ParticleEngine(pnumber);
+	}
 	if (!engine) {
 		Utils::engineLoaded(env, 1);
         return ;
@@ -133,11 +137,13 @@ JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_step(JNIEnv * env, 
 	if (!engine)
 	{
 		LOGE("Engine is dead !");
+		exit(EXIT_FAILURE);
 		return;
 	}
 	if (!app)
 	{
 		LOGE("GlApp is dead !");
+		exit(EXIT_FAILURE);
 		return;
 	}
 	app->draw();

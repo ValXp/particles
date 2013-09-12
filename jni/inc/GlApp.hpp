@@ -154,6 +154,7 @@ class GlApp
     time_t          m_last;
     long            m_engineLast;
     long            m_gpuLast;
+    clock_t	    m_lastMs;
 
     // zoom value
     float           m_zoom;

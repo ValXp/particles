@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,7 +34,6 @@ public class Settings extends Activity {
         final SeekBar seek = (SeekBar) findViewById(R.id.seekBar1);
         final TextView size = (TextView) findViewById(R.id.textView3);
         final CheckBox check = (CheckBox) findViewById(R.id.checkBox1);
-        final CheckBox showFps = (CheckBox) findViewById(R.id.checkBox2);
         TextView ver = (TextView) findViewById(R.id.textView4);
         try {
             ver.setText("v" + getPackageManager().getPackageInfo(getPackageName(), 0).versionName + " Build " + ParticlesCPP.getBuild());
@@ -50,7 +48,6 @@ public class Settings extends Activity {
         size.setText("" + pSize);
         seek.setProgress(PreferencesHelper.sizeToSeek(pSize));
         check.setChecked(PreferencesHelper.getMotionBlur(this));
-        showFps.setChecked(PreferencesHelper.getShowFps(this));
         seek.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
@@ -71,7 +68,7 @@ public class Settings extends Activity {
                     in.hideSoftInputFromWindow(pNumberField
                             .getApplicationWindowToken(),
                             InputMethodManager.HIDE_NOT_ALWAYS);
-                    storeSettings(pNumberField, check.isChecked(), seek.getProgress(), showFps.isChecked());
+                    storeSettings(pNumberField, check.isChecked(), seek.getProgress(), false);
                     return true;
                 }
                 return false;
@@ -84,7 +81,7 @@ public class Settings extends Activity {
                 in.hideSoftInputFromWindow(pNumberField
                         .getApplicationWindowToken(),
                         InputMethodManager.HIDE_NOT_ALWAYS);
-                storeSettings(pNumberField, check.isChecked(), seek.getProgress(), showFps.isChecked());
+                storeSettings(pNumberField, check.isChecked(), seek.getProgress(), false);
             }
         });
     }
@@ -118,9 +115,7 @@ public class Settings extends Activity {
             if (alreadyLaunched)
                 return;
             alreadyLaunched = true;
-            Intent intent = new Intent(this, ParticlesActivity.class);
-            startActivityForResult(intent, 4242);
-            Log.d("", "start main activity");
+            finish();
         }
     }
     

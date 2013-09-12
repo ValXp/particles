@@ -47,8 +47,8 @@ int main(int ac, char **av)
     {
 
 	app->draw();
-	eglSwap();
 	app->countFPS();
+	eglSwap();
     }
     return 0;
 }

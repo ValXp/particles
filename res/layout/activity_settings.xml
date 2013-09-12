@@ -66,14 +66,6 @@
             android:paddingTop="20dip"
             android:text="@string/Motion_Blur" />
 
-        <CheckBox
-            android:id="@+id/checkBox2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:includeFontPadding="false"
-            android:paddingTop="20dip"
-            android:text="@string/Show_Fps"/>
 
         <Button
             android:id="@+id/button1"

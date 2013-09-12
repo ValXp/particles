@@ -27,6 +27,8 @@ void Utils::printABI()
 	LOGI("MOVBE ? %s\n", ((cpu & ANDROID_CPU_X86_FEATURE_MOVBE) ? "YES" : "NO"));
 }
 
+const char *className = "com/valxp/particles/JavaCaller";
+
 char *Utils::loadRessource(JNIEnv *env, const char *ressource)
 {
 	jstring jres = env->NewStringUTF(ressource);
@@ -35,7 +37,7 @@ char *Utils::loadRessource(JNIEnv *env, const char *ressource)
 		LOGE("Cannot create Java String\n");
 		exit(EXIT_FAILURE);
 	}
-	jclass jcaller = env->FindClass("com/valxp/particles/JavaCaller");
+	jclass jcaller = env->FindClass(className);
 	if (jcaller == 0)
 	{
 		LOGE("Cannot locate class JavaCaller\n");
@@ -66,7 +68,7 @@ char *Utils::loadRessource(JNIEnv *env, const char *ressource)
 
 Bitmap *Utils::loadImage(JNIEnv *env)
 {
-	jclass jcaller = env->FindClass("com/valxp/particles/JavaCaller");
+	jclass jcaller = env->FindClass(className);
 	if (jcaller == 0)
 	{
 		LOGE("Cannot locate class JavaCaller\n");
@@ -97,7 +99,7 @@ void    Utils::printMessage(JNIEnv *env, const char *message, int duration)
 		LOGE("Cannot create Java String\n");
 		exit(EXIT_FAILURE);
 	}
-	jclass jcaller = env->FindClass("com/valxp/particles/JavaCaller");
+	jclass jcaller = env->FindClass(className);
 	if (jcaller == 0)
 	{
 		LOGE("Cannot locate class JavaCaller\n");
@@ -115,7 +117,7 @@ void    Utils::printMessage(JNIEnv *env, const char *message, int duration)
 
 void    Utils::engineLoaded(JNIEnv *env, int status)
 {
-	jclass jcaller = env->FindClass("com/valxp/particles/JavaCaller");
+	jclass jcaller = env->FindClass(className);
 	if (jcaller == 0)
 	{
 		LOGE("Cannot locate class JavaCaller\n");
@@ -132,7 +134,7 @@ void    Utils::engineLoaded(JNIEnv *env, int status)
 
 void Utils::onFPSUpdate(JNIEnv *env, float cpu, float gpu) 
 {
-	jclass jcaller = env->FindClass("com/valxp/particles/JavaCaller");
+	jclass jcaller = env->FindClass(className);
 	if (jcaller == 0)
 	{
 		LOGE("Cannot locate class JavaCaller\n");
