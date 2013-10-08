@@ -17,7 +17,6 @@ include buildinfo.inc
 
 include $(CLEAR_VARS)
 
-APP_ABI := armeabi-v7a armeabi x86 mips
 LOCAL_MODULE    := libParticles
 LOCAL_CFLAGS    := -Iinc  -DBUILD_NB=$(BUILD) -O3 -DANDROID
 LOCAL_SRC_FILES := src/jniCalls.cpp src/utils.cpp src/ParticleEngine.cpp src/Bitmap.cpp src/ShaderProgram.cpp src/GlApp.cpp
