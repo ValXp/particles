@@ -5,6 +5,7 @@ fi
 e=`cat buildinfo.inc | head -n1 | sed 's/BUILD := //'`
 e=$((e))
 export NDK_TOOLCHAIN_VERSION=clang
+#export NDK_TOOLCHAIN_VERSION=clang3.2
 ndk-build -B -j 16
 if [ $? -eq 0 ] ; then
 echo "Build $e success"
