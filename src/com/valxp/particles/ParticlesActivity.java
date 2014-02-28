@@ -22,7 +22,7 @@ public class ParticlesActivity extends Activity {
 
     public void launch()
     {
-        int pnumber = PreferencesHelper.getParticleNumber(this);
+        long pnumber = PreferencesHelper.getParticleNumber(this);
         float partSize = PreferencesHelper.getParticleSize(this);
         boolean motionBlur = PreferencesHelper.getMotionBlur(this);
         showFps = PreferencesHelper.getShowFps(this);

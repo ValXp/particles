@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <new>
 #ifdef ANDROID
 #include <cpu-features.h>
 #endif
@@ -36,38 +37,59 @@ void    ParticleEngine::initParticle(uint idx)
     m_active[idx] = (int)Utils::myRand(-50, 0);
 }
 
-void    ParticleEngine::initParticles()
+// Returns true in case of allocation failure
+bool    ParticleEngine::initParticles()
 {
     srandom(time(0));
 	unsigned int size = (m_max_part_nbr * sizeof(int)) + 		// m_active
-						/*(m_max_part_nbr * sizeof(float) * 3) + */	// m_colors
 						(m_max_part_nbr * sizeof(float) * 3) +	// m_positions
 						(m_max_part_nbr * sizeof(float) * 3);	// m_speed
 	LOGI("Allocating particles memory : %d kbytes\n", size / 1000);
     m_active = 0;
-    //m_colors  = 0;
     m_positions = m_speed = 0;
-    m_active = new int[m_max_part_nbr];
-    //m_colors = new float[m_max_part_nbr * 3];
-    m_positions = new float[m_max_part_nbr * 3];
-    m_speed = new float[m_max_part_nbr * 3];
-    if (m_active == 0 /*|| m_colors == 0*/ ||
-        m_positions == 0 || m_speed == 0)
+
+
+    m_active = new (std::nothrow) int[m_max_part_nbr];
+    if (!m_active)
     {
-        LOGE("Cannot allocate %d particles. Not enough memory (%d kbytes)\n", m_max_part_nbr, size/1000);
-        if (m_active)
-            delete[] m_active;
-        /*if (m_colors)
-            delete[] m_colors;*/
-        if (m_positions)
-            delete[] m_positions;
-        if (m_speed)
-            delete[] m_speed;
-        return ; // exceptions disabled
-        //throw EngineException(MEM_ALLOC_ERROR_MSG);
+    	allocFailed(size);
+    	return true;
     }
+    m_positions = new (std::nothrow) float[m_max_part_nbr * 3];
+    if (!m_positions)
+	{
+		allocFailed(size);
+		return true;
+	}
+    m_speed = new (std::nothrow) float[m_max_part_nbr * 3];
+    if (!m_speed)
+	{
+		allocFailed(size);
+		return true;
+	}
+
     for (uint cur = 0; cur < m_max_part_nbr; ++cur)
         initParticle(cur);
+    return false;
+}
+
+void 	ParticleEngine::allocFailed(int size)
+{
+	if (m_active == 0 || m_positions == 0 || m_speed == 0)
+	{
+		LOGE("Cannot allocate %d particles. Not enough memory (%d kbytes)\n", m_max_part_nbr, size/1000);
+		if (m_active)
+			delete[] m_active;
+		m_active = 0;
+		if (m_positions)
+			delete[] m_positions;
+		m_positions = 0;
+		if (m_speed)
+			delete[] m_speed;
+		m_speed = 0;
+		return; // exceptions disabled
+		//throw EngineException(MEM_ALLOC_ERROR_MSG);
+	}
 }
 
 void    *threadFunc(void *arg)
@@ -159,7 +181,9 @@ void    ParticleEngine::_step(ThreadArg &arg)
                         PSPEED_Y(i) = -PSPEED_Y(i) * BOUNCYNESS;
                }
             }
-
+            if (POS_Y(i) <= m_randomCursor - m_randomSpeed &&
+                POS_Y(i) >= m_randomCursor + m_randomSpeed)
+                setRandomSpeed(i);
         }
         else if (m_emit)
         {
@@ -171,6 +195,8 @@ void    ParticleEngine::_step(ThreadArg &arg)
         ++m_frameNb;
         if (m_hasWave)
             moveWave();
+        if (m_randomCursor > -LIMIT_Y + m_randomSpeed)
+            m_randomCursor += m_randomSpeed;
     }
     ++(arg.frame_nb);
     clock_t current = TIME_MS();
@@ -188,14 +214,13 @@ void    ParticleEngine::_step(ThreadArg &arg)
     
 }
 
-ParticleEngine::ParticleEngine(uint max_part_nbr, uint threadNb)
+ParticleEngine::ParticleEngine(uint max_part_nbr, uint threadNb) : m_hasFailed(false)
 {
     LOGI("Engine initialization : %d particles\n", max_part_nbr);
 
 #ifdef ANDROID
     LOGI("Cpu count : %d\n", android_getCpuCount());
 #endif
-  
     m_threadNb = threadNb;
 #ifdef ANDROID
     if (threadNb == 0)
@@ -205,14 +230,20 @@ ParticleEngine::ParticleEngine(uint max_part_nbr, uint threadNb)
 
     if (m_threadNb < 1)
         m_threadNb = 1;
-    m_threads = 0;
-    m_args = 0;
-    m_threads = new pthread_t[m_threadNb];
-    m_args = new ThreadArg[m_threadNb];
+
+    if (max_part_nbr < m_threadNb) {
+    	max_part_nbr = m_threadNb;
+    }
+    max_part_nbr -= max_part_nbr % m_threadNb;
+
+    m_threads = new (std::nothrow) pthread_t[m_threadNb];
+    m_args = new (std::nothrow) ThreadArg[m_threadNb];
     if (m_threads == 0 || m_args == 0)
     {
         LOGE("Cannot allocate %d threads.\n", m_threadNb);
         // exceptions disabled
+        m_hasFailed = true;
+        m_threadNb = 0;
         return;
         //throw EngineException(MEM_ALLOC_THREAD_ERROR_MSG);
     }
@@ -229,10 +260,15 @@ ParticleEngine::ParticleEngine(uint max_part_nbr, uint threadNb)
     m_emit = true;
     m_timeSlept = 0;
     m_pause = true;
+    m_randomCursor = -LIMIT_Y;
+    m_randomSpeed = 0;
 
     m_hasWave = false;
 
-    initParticles();
+    if (m_hasFailed = initParticles()) {
+    	m_threadNb = 0;
+    	return;
+    }
 
     for (unsigned int i = 0; i < m_threadNb; ++i)
     {
@@ -250,6 +286,7 @@ ParticleEngine::ParticleEngine(uint max_part_nbr, uint threadNb)
 
 ParticleEngine::~ParticleEngine()
 {
+	LOGI("Cleaning up Particles Engine");
     m_pause = false;
     for (uint i = 0; i < m_threadNb; ++i)
     {
@@ -261,12 +298,21 @@ ParticleEngine::~ParticleEngine()
     LOGI("Frames : %ld Time slept : %ldms\n", getFrameNb(), getTimeSlept());
     // at this point every thread should be dead
 
-    delete[] m_threads;
-    delete[] m_args;
-    //delete[] m_colors;
-    delete[] m_positions;
-    delete[] m_speed;
-    delete[] m_active;
+    if (m_threads)
+    	delete[] m_threads;
+    m_threads = 0;
+    if (m_args)
+    	delete[] m_args;
+    m_args = 0;
+    if (m_positions)
+    	delete[] m_positions;
+    m_positions = 0;
+    if (m_speed)
+    	delete[] m_speed;
+    m_speed = 0;
+    if (m_active)
+    	delete[] m_active;
+    m_active = 0;
     LOGI("Engine Killed. \n");
 }
 

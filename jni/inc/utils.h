@@ -53,6 +53,7 @@ namespace Utils
 	void    printABI();
 	void 	onFPSUpdate(JNIEnv *env, float cpu, float gpu);
 #endif
+    const char    *getArch();
 	void    genRandomDiskPoint(float disk_radius, float &x, float &y); // Z will be zero
 	float   myRand(float min, float max);
 	// add "addVal" to "*toSum" atomically

@@ -1,11 +1,13 @@
 
 package com.valxp.particles;
 
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -16,19 +18,21 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class Settings extends Activity {
     
     boolean alreadyLaunched = false;
-
+    TextView mWarning;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         Button b = (Button) findViewById(R.id.button1);
+        mWarning = (TextView) findViewById(R.id.warning);
         final EditText pNumberField = (EditText) findViewById(R.id.editText1);
         final SeekBar seek = (SeekBar) findViewById(R.id.seekBar1);
         final TextView size = (TextView) findViewById(R.id.textView3);
@@ -36,13 +40,12 @@ public class Settings extends Activity {
         final CheckBox showFps = (CheckBox) findViewById(R.id.checkBox2);
         TextView ver = (TextView) findViewById(R.id.textView4);
         try {
-            ver.setText("v" + getPackageManager().getPackageInfo(getPackageName(), 0).versionName + " Build " + ParticlesCPP.getBuild());
+            ver.setText("v" + getPackageManager().getPackageInfo(getPackageName(), 0).versionName + " Arch : " + ParticlesCPP.getArch() + " Build " + ParticlesCPP.getBuild());
         } catch (NameNotFoundException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
             ver.setText("");
         }
-        int pNumber = PreferencesHelper.getParticleNumber(this);
+        long pNumber = PreferencesHelper.getParticleNumber(this);
         pNumberField.setText("" + (pNumber > 0 ? pNumber : ""));
         float pSize = PreferencesHelper.getParticleSize(this);
         size.setText("" + pSize);
@@ -61,8 +64,25 @@ public class Settings extends Activity {
                 size.setText("" + PreferencesHelper.seekToSize(progress));
             }
         });
+        
+        pNumberField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                mWarning.setVisibility(View.INVISIBLE);
+            }
+            
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+            }
+            
+            @Override
+            public void afterTextChanged(Editable arg0) {
+            }
+        });
         pNumberField.setOnKeyListener(new OnKeyListener() {
+            
             public boolean onKey(View v, int keyCode, KeyEvent event) {
+                mWarning.setVisibility(View.INVISIBLE);
                 if (keyCode == KeyEvent.KEYCODE_ENTER)
                 {
                     InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -85,6 +105,7 @@ public class Settings extends Activity {
                 storeSettings(pNumberField, check.isChecked(), seek.getProgress(), showFps.isChecked());
             }
         });
+        mWarning.setVisibility(View.INVISIBLE);
     }
 
     private void storeSettings(EditText t, Boolean blur, int partSize, Boolean showFps)
@@ -94,10 +115,10 @@ public class Settings extends Activity {
             errorParticleNumber();
             return;
         }
-        int pnumber = 0;
+        Long pnumber = 0l;
         try
         {
-            pnumber = Integer.valueOf(t.getText().toString());
+            pnumber = Long.valueOf(t.getText().toString());
         } catch (Exception e)
         {
             errorParticleNumber();
@@ -136,7 +157,8 @@ public class Settings extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == ParticlesActivity.RESULT_FAILURE) {
-                Toast.makeText(this, R.string.too_many_particles, Toast.LENGTH_LONG).show();
+            mWarning.setVisibility(View.VISIBLE);
+            Toast.makeText(this, R.string.too_many_particles, Toast.LENGTH_LONG).show();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }

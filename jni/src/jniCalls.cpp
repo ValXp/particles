@@ -31,7 +31,13 @@ extern "C" {
     JNIEXPORT float JNICALL Java_com_valxp_particles_ParticlesCPP_getBlur(JNIEnv * env, jobject obj);
     JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_setSize(JNIEnv * env, jobject obj, jfloat size);
     JNIEXPORT float JNICALL Java_com_valxp_particles_ParticlesCPP_getSize(JNIEnv * env, jobject obj);
+    JNIEXPORT jstring JNICALL Java_com_valxp_particles_ParticlesCPP_getArch(JNIEnv * env, jobject obj);
 };
+
+JNIEXPORT jstring JNICALL Java_com_valxp_particles_ParticlesCPP_getArch(JNIEnv * env, jobject obj)
+{
+    return env->NewStringUTF(Utils::getArch());
+}
 
 JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_setSize(JNIEnv * env, jobject obj, jfloat size)
 {
@@ -69,11 +75,7 @@ JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_randomize(JNIEnv * 
 {
 	if (engine)
 	{
-		for (int i = 0; i < engine->particleNumber(); ++i) {
-			engine->setRandomSpeed(i);
-			if (!(i % 100))
-			usleep(1);
-		}
+        engine->setRandomSpeed();
 	}
 }
 
@@ -117,7 +119,10 @@ JNIEXPORT void JNICALL Java_com_valxp_particles_ParticlesCPP_init(JNIEnv * env, 
 	Utils::printABI();
 	if (!engine)
 		engine = new ParticleEngine(pnumber);
-	if (!engine) {
+	if (!engine || engine->hasFailed()) {
+		if (engine)
+			delete engine;
+		engine = 0;
 		Utils::engineLoaded(env, 1);
         return ;
     }

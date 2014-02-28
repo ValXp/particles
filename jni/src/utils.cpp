@@ -12,13 +12,24 @@ void Utils::printGLString(const char *name, GLenum s) {
 	LOGI("GL %s = %s\n", name, v);
 }
 
+const char *Utils::getArch()
+{
+#ifdef __i386__
+	return "i386";
+#elif defined __arm__
+	return "ARM";
+#elif defined _MIPS_ARCH
+	return "MIPS";
+#endif
+	return "unknown";
+}
 
 #ifdef ANDROID
 
 void Utils::printABI()
 {
 	uint64_t cpu = android_getCpuFeatures();
-
+	LOGI("ARCH : %s\n", getArch());
 	LOGI("ARMv7 ? %s\n", (cpu & ANDROID_CPU_ARM_FEATURE_ARMv7 ? "YES" : "NO"));
 	LOGI("Hardware FP ? %s\n", (cpu & ANDROID_CPU_ARM_FEATURE_VFPv3 ? "YES" : "NO"));
 	LOGI("NEON ? %s\n", (cpu & ANDROID_CPU_ARM_FEATURE_NEON ? "YES" : "NO"));

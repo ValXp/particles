@@ -19,4 +19,5 @@ public class ParticlesCPP{
 	public static native float getBlur();
 	public static native float getSize();
 	public static native void setSize(float size);
+	public static native String getArch();
 }

@@ -18,11 +18,11 @@ include jni/buildinfo.inc
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := libParticles
-LOCAL_CFLAGS    := -Ijni/inc  -DBUILD_NB=$(BUILD) -O3 -DANDROID
+LOCAL_CFLAGS    := -Ijni/inc  -DBUILD_NB=$(BUILD) -O3 -DANDROID -pipe 
 LOCAL_SRC_FILES := src/jniCalls.cpp src/utils.cpp src/ParticleEngine.cpp src/Bitmap.cpp src/ShaderProgram.cpp src/GlApp.cpp
 LOCAL_LDLIBS    := -llog -lGLESv2 
 LOCAL_STATIC_LIBRARIES := cpufeatures
-LOCAL_LDFLAGS += -fuse-ld=bfd
+LOCAL_LDFLAGS += -fuse-ld=bfd -march=native
 
 
 

@@ -23,6 +23,7 @@
 #   define GROUND_X 1.50
 #   define GROUND_Z 1.50
 #   define WAVE_WIDTH 0.2f
+#   define RANDOM_SPEED .3f
 
 #   define COLOR_R(idx) (*(m_colors + (idx * 3) + 0))
 #   define COLOR_G(idx) (*(m_colors + (idx * 3) + 1))
@@ -91,6 +92,12 @@ class ParticleEngine
     inline bool paused()
     {
         return m_pause;
+    }
+
+    inline void setRandomSpeed()
+    {
+        m_randomCursor = LIMIT_Y / 2;
+        m_randomSpeed = -RANDOM_SPEED;
     }
 
     inline void setRandomSpeed(uint part)
@@ -192,10 +199,15 @@ class ParticleEngine
 
     void    startWave(float intensity, float speed);
     void    _step(ThreadArg &arg);
+    bool	hasFailed()
+    {
+    	return m_hasFailed;
+    }
     private:
     void    moveWave();
-    void    initParticles();
+    bool    initParticles();
     void    initParticle(uint idx);
+    void 	allocFailed(int size);
     
     // Particles storage, aligned arrays easier to upload to opengl 
     // don't need colors anymore
@@ -203,7 +215,6 @@ class ParticleEngine
     float           *m_positions;
     float           *m_speed;
     int             *m_active;
-
 
     t_coord         m_pos;
     t_coord         m_limit;
@@ -225,6 +236,9 @@ class ParticleEngine
     float           m_waveSpeed;
     bool            m_hasWave;
     float           m_waveIntensity;
+    bool			m_hasFailed;
+    float           m_randomCursor;
+    float           m_randomSpeed;
 };
 
 

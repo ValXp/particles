@@ -8,20 +8,18 @@
     <string name="Motion_Blur">Flou de mouvement (Desactivez pour de meilleures performances)</string>
     <string name="Go_Button">Go !</string>
     <string name="Not_Enough_Particles">Pas assez de particules, essayez 10000</string>
-    
     <string name="menu_settings">Parametres</string>
-   
     <string name="title_activity_settings">Parametres</string>
     <string name="settings_particle_number">pnumer</string>
     <string name="settings_particle_size">psize</string>
     <string name="settings_particle_blur">blur</string>
     <string name="settings_name">particles_settings</string>
-	<string name="loading">Chargement ...</string>
-	
+    <string name="loading">Chargement &#8230;</string>
     <string name="settings_show_fps">show_fps</string>
     <string name="title_activity_java_engine_test">JavaEngineTestActivity</string>
     <string name="action_settings">Parametres</string>
-    
-	<string name="too_many_particles">Impossible de lancer le moteur physique. Essayez moins de particules</string>
-	<string name="Show_Fps">Afficher les FPS</string>
+    <string name="too_many_particles">Impossible de lancer le moteur physique. Essayez moins de particules</string>
+    <string name="Show_Fps">Afficher les FPS</string>
+    <string name="warn_too_many_particles">Trop de particules !</string>
+
 </resources>

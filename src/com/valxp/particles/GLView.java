@@ -16,7 +16,7 @@ import android.view.ScaleGestureDetector;
 import android.view.View;
 
 public class GLView extends GLSurfaceView {
-    private static int pnumber = 42;
+    private static long pnumber = 42;
     private static float psize = 1.0f;
     private static boolean motionBlur = true;
     private static String TAG = "GL2JNIView";
@@ -26,11 +26,11 @@ public class GLView extends GLSurfaceView {
     private Boolean mScaleChanged = false;
     private Context mContext;
 
-    public GLView(Context context, int pnumber, float psize, boolean motionBlur) {
+    public GLView(Context context, long pnumber2, float psize, boolean motionBlur) {
         super(context);
         mContext = context;
         GLView.psize = psize;
-        GLView.pnumber = pnumber;
+        GLView.pnumber = pnumber2;
         GLView.motionBlur = motionBlur;
         init(false, 0, 0);
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
@@ -45,7 +45,7 @@ public class GLView extends GLSurfaceView {
             mScaleChanged = false;
         }
     };
-
+    
     private void init(boolean translucent, int depth, int stencil) {
 
         /*
@@ -72,6 +72,7 @@ public class GLView extends GLSurfaceView {
         setEGLConfigChooser(translucent ?
                 new ConfigChooser(8, 8, 8, 8, depth, stencil) :
                 new ConfigChooser(5, 6, 5, 0, depth, stencil));
+        
 
         /* Set the renderer responsible for frame rendering */
         setRenderer(new Renderer());
@@ -312,7 +313,10 @@ public class GLView extends GLSurfaceView {
         public void onSurfaceChanged(GL10 gl, int width, int height) {
 
             System.out.println("[JAVA] On surface Changed");
-            ParticlesCPP.init(width, height, pnumber, psize, motionBlur);
+            int particles = (int) pnumber;
+            if (particles < 0 && pnumber > 0)
+                particles = Integer.MAX_VALUE;
+            ParticlesCPP.init(width, height, particles, psize, motionBlur);
 
         }
 

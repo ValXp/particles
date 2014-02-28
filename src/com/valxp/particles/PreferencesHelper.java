@@ -15,9 +15,9 @@ public class PreferencesHelper {
         return ctx.getSharedPreferences(ctx.getString(R.string.settings_name), 0);
     }
 
-    public static void setParticleNumber(Context ctx, int number) {
+    public static void setParticleNumber(Context ctx, Long pnumber) {
         Editor edit = getEditor(ctx);
-        edit.putInt(ctx.getString(R.string.settings_particle_number), number);
+        edit.putLong(ctx.getString(R.string.settings_particle_number), pnumber);
         edit.commit();
     }
 
@@ -39,8 +39,17 @@ public class PreferencesHelper {
         edit.commit();
     }
 
-    public static int getParticleNumber(Context ctx) {
-        return getPrefs(ctx).getInt(ctx.getString(R.string.settings_particle_number), 0);
+    public static Long getParticleNumber(Context ctx) {
+        Long l  = Long.valueOf(0);
+        try {
+            l = getPrefs(ctx).getLong(ctx.getString(R.string.settings_particle_number), 0);
+        } catch (Exception e) {
+            try {
+            l = (long) getPrefs(ctx).getInt(ctx.getString(R.string.settings_particle_number), 0);
+            } catch (Exception e1) {
+            }
+        }
+        return l;
     }
 
     public static float getParticleSize(Context ctx) {
