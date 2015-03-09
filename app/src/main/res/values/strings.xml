@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Particles</string>
+    <string name="title_activity_main">Particles</string>
+    <string name="Title_Particle_Number">Particle Number :</string>
+    <string name="auto_count">Automatically choose</string>
+    <string name="Hint_Particle_Number">Enter Particle Number</string>
+    <string name="Title_Particle_Size">Particle size :</string>
+    <string name="Motion_Blur">Motion Blur (Disable to increase performances)</string>
+    <string name="Not_Enough_Particles">Not Enough Particles (Try 10000)</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="settings_particle_number">pnumer</string>
+    <string name="settings_particle_size">psize</string>
+    <string name="settings_particle_blur">blur</string>
+    <string name="settings_name">particles_settings</string>
+    <string name="settings_show_fps">show_fps</string>
+    <string name="settings_version">settings_version</string>
+    <string name="settings_auto_count">settings_auto_count</string>
+    <string name="title_activity_java_engine_test">JavaEngineTestActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="loading">Loading&#8230;</string>
+    <string name="too_many_particles">Cannot load engine. Try less particles</string>
+    <string name="Show_Fps">Show FPS</string>
+    <string name="warn_too_many_particles">Too many particles !</string>
+    <string name="start">Start</string>
+    <string name="options">Options</string>
+    <string name="calibrating">Calibrating&#8230;</string>
+    <string name="particles">particles</string>
+
+</resources>

@@ -1,0 +1,7 @@
+<resources>
+
+    <style name="AppTheme" parent="android:Theme.Holo.NoActionBar">
+        <item name="android:windowBackground">@drawable/particles_bg</item>
+    </style>
+
+</resources>
